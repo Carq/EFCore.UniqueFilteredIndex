@@ -47,7 +47,7 @@ namespace EFCore.UniqueFilteredIndex
         private static void CreateTwoTheSameEntitiesWhichDoNotMetFilterConditions(JustDatabaseContext context)
         {
             context.Users.Add(new Model.User { IsActive = false, Login = "Login1", Email = "Jan@Kowalski.pl" });
-            context.Users.Add(new Model.User { IsActive = false, Login = "Login2", Email = "Jan@Kowalski.pl" });
+            context.Users.Add(new Model.User { IsActive = false, Login = "Login1", Email = "Jan@Kowalski.pl" });
             context.SaveChanges();
         }
 
