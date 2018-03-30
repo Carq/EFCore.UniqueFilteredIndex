@@ -12,27 +12,39 @@ namespace EFCore.UniqueFilteredIndex
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
             InitializeDiContainer();
+            JustDatabaseContext context = MigrateDatabase();
 
+            CreateTwoTheSameEntitiesWhichDoNotMetFilterConditions(context);
+            RemoveTwoEntitiesWithFilteredIndex(context);
+            CleanupDatabase(context);
+        }
+
+        private static void RemoveTwoEntitiesWithFilteredIndex(JustDatabaseContext context)
+        {
+            var entitiesToDelete = context.Users.Where(x => x.IsActive == false);
+            context.RemoveRange(entitiesToDelete);
+
+            // The problem occurs during saving changes
+            context.SaveChanges();
+        }
+
+        private static void CreateTwoTheSameEntitiesWhichDoNotMetFilterConditions(JustDatabaseContext context)
+        {
+            context.Users.Add(new Model.User { IsActive = false, Login = "2", Email = "Jan@Kowalski.pl" });
+            context.Users.Add(new Model.User { IsActive = false, Login = "2", Email = "Jan@Kowalski.pl" });
+            context.SaveChanges();
+        }
+
+        private static JustDatabaseContext MigrateDatabase()
+        {
             var context = _container.Resolve<JustDatabaseContext>();
             context.Database.Migrate();
+            return context;
+        }
 
-           
-
-            context.Users.Add(new Model.User { IsActive = false, Login = "2", Email = "John@wp.pl" });
-            context.Users.Add(new Model.User { IsActive = false, Login = "2", Email = "John@wp.pl" });
-            
-            context.SaveChanges();
-
-            context.Users.Add(new Model.User { IsActive = true, Login = "2", Email = "John@wp.pl" });
-            context.SaveChanges();
-
-            var test = context.Users.Where(x => x.IsActive == false);
-
-            context.RemoveRange(test);
-            context.SaveChanges();
-
+        private static void CleanupDatabase(JustDatabaseContext context)
+        {
             context.RemoveRange(context.Users);
             context.SaveChanges();
         }
@@ -54,12 +66,5 @@ namespace EFCore.UniqueFilteredIndex
             builder.RegisterType<JustDatabaseContext>();
             builder.RegisterType<DbInitalizer>();
         }
-
-        //migrationBuilder.CreateIndex(
-        //     name: "IX_Users_Login_Email",
-        //       table: "Users",
-        //       columns: new[] { "Login", "Email" },
-        //       unique: true,
-        //       filter: "IsActive = 1");
     }
 }

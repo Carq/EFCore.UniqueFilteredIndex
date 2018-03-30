@@ -8,7 +8,7 @@ namespace EFCore.UniqueFilteredIndex.Context
         public JustDatabaseContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<JustDatabaseContext>()
-                                .UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=JustDatabase;Trusted_Connection=True")
+                                .UseSqlServer("Server=.\\SQLEXPRESS;Database=JustDatabase;Trusted_Connection=True")
                                 .Options;
 
             return new JustDatabaseContext(options);
