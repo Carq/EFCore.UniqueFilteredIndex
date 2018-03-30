@@ -13,6 +13,8 @@ namespace EFCore.UniqueFilteredIndex.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            /// Workaround
+            /// Removing this code after migration creation solves the problem
             modelBuilder
               .Entity<User>()
               .HasIndex("Email", "Login")
